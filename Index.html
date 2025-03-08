@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculators</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-button.active {
+            background: #fff;
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .calculator-card.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #1e3c72;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #1e3c72;
+            outline: none;
+        }
+
+        button.calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button.calculate-btn:hover {
+            background: #2a5298;
+        }
+
+        .result-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-item span:first-child {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .result-item span:last-child {
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .calculator-icon {
+            font-size: 24px;
+            color: #2a5298;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Menu -->
+        <div class="nav-menu">
+            <button class="nav-button active" onclick="showCalculator('emi')">
+                <i class="fas fa-calculator"></i> EMI Calculator
+            </button>
+            <button class="nav-button" onclick="showCalculator('gst')">
+                <i class="fas fa-rupee-sign"></i> GST Calculator
+            </button>
+        </div>
+
+        <!-- EMI Calculator -->
+        <div id="emiCalculator" class="calculator-card active">
+            <h2><i class="fas fa-calculator calculator-icon"></i> Loan EMI Calculator</h2>
+            <div class="form-group">
+                <label for="loanAmount">Loan Amount (₹)</label>
+                <input type="number" id="loanAmount" placeholder="Enter loan amount">
+            </div>
+            <div class="form-group">
+                <label for="interestRate">Annual Interest Rate (%)</label>
+                <input type="number" id="interestRate" step="0.01" placeholder="Enter interest rate">
+            </div>
+            <div class="form-group">
+                <label for="tenure">Loan Tenure</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="tenure" placeholder="Enter tenure">
+                    <select id="tenureType">
+                        <option value="months">Months</option>
+                        <option value="years">Years</option>
+                    </select>
+                </div>
+            </div>
+            <button class="calculate-btn" onclick="calculateEMI()">Calculate EMI</button>
+            <div class="result-section">
+                <div class="result-item">
+                    <span>Monthly EMI:</span>
+                    <span id="emiResult">₹0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Interest:</span>
+                    <span id="totalInterest">₹0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Payment:</span>
+                    <span id="totalPayment">₹0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GST Calculator -->
+        <div id="gstCalculator" class="calculator-card">
+            <h2><i class="fas fa-rupee-sign calculator-icon"></i> GST Calculator</h2>
+            <div class="form-group">
+                <label for="originalPrice">Original Price (₹)</label>
+                <input type="number" id="originalPrice" placeholder="Enter original price">
+            </div>
+            <div class="form-group">
+                <label for="gstRate">GST Rate (%)</label>
+                <select id="gstRate">
+                    <option value="5">5%</option>
+                    <option value="12">12%</option>
+                    <option value="18">18%</option>
+                    <option value="28">28%</option>
+                </select>
+            </div>
+            <button class="calculate-btn" onclick="calculateGST()">Calculate GST</button>
+            <div class="result-section">
+                <div class="result-item">
+                    <span>GST Amount:</span>
+                    <span id="gstAmount">₹0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Price:</span>
+                    <span id="totalPrice">₹0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>CGST:</span>
+                    <span id="cgst">₹0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>SGST:</span>
+                    <span id="sgst">₹0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Calculator visibility control
+        function showCalculator(calculatorType) {
+            // Update buttons
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update calculators
+            document.querySelectorAll('.calculator-card').forEach(calc => {
+                calc.classList.remove('active');
+            });
+            document.getElementById(calculatorType + 'Calculator').classList.add('active');
+        }
+
+        // EMI Calculation
+        function calculateEMI() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            let tenure = parseFloat(document.getElementById('tenure').value);
+            const tenureType = document.getElementById('tenureType').value;
+
+            if (tenureType === 'years') tenure *= 12;
+            const monthlyRate = (interestRate / 12) / 100;
+            
+            const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) /
+                       (Math.pow(1 + monthlyRate, tenure) - 1);
+            
+            const totalPayment = emi * tenure;
+            const totalInterest = totalPayment - loanAmount;
+
+            document.getElementById('emiResult').textContent = `₹${emi.toFixed(2)}`;
+            document.getElementById('totalInterest').textContent = `₹${totalInterest.toFixed(2)}`;
+            document.getElementById('totalPayment').textContent = `₹${totalPayment.toFixed(2)}`;
+        }
+
+        // GST Calculation
+        function calculateGST() {
+            const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+            const gstRate = parseFloat(document.getElementById('gstRate').value);
+            
+            const gstAmount = (originalPrice * gstRate) / 100;
+            const totalPrice = originalPrice + gstAmount;
+            const cgst = sgst = gstAmount / 2;
+
+            document.getElementById('gstAmount').textContent = `₹${gstAmount.toFixed(2)}`;
+            document.getElementById('totalPrice').textContent = `₹${totalPrice.toFixed(2)}`;
+            document.getElementById('cgst').textContent = `₹${cgst.toFixed(2)}`;
+            document.getElementById('sgst').textContent = `₹${sgst.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
